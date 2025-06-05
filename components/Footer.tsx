@@ -18,7 +18,7 @@ export default function Footer() {
           >
             George Abdulaziz
           </a>
-          <p>For TVO Job Assignment</p>
+          <p className="footer-text">For <a className="footer-link" style={{ color: 'red' }} href="https://www.tvo.org/" target="_blank" rel="noopener noreferrer">TVO</a> Job Assignment</p>
         </div>
       </div>
     </footer>
