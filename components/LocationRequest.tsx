@@ -1,3 +1,33 @@
+/**
+ * LocationRequest Component
+ * 
+ * A client-side component that handles weather data fetching through two methods:
+ * 1. Using browser's geolocation API to get weather for current location
+ * 2. Using city name input to get weather for a specific city
+ * 
+ * Features:
+ * - Automatic geolocation detection
+ * - City search functionality
+ * - Loading states
+ * - Error handling
+ * - Responsive design
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <LocationRequest />
+ * ```
+ * 
+ * State Management:
+ * - weather: Stores the current weather data
+ * - loading: Tracks API request status
+ * - error: Stores error messages
+ * - location: Stores user's coordinates
+ * - city: Manages city input value
+ * - isClient: Handles client-side hydration
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,6 +35,9 @@ import { fetchWeatherData } from '@/services/weatherServices';
 import { WeatherResponse } from '@/services/types/weather.types';
 
 export default function LocationRequest() {
+  /**
+   * State declarations with type annotations
+   */
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -12,10 +45,21 @@ export default function LocationRequest() {
   const [city, setCity] = useState('');
   const [isClient, setIsClient] = useState(false);
 
+  /**
+   * Effect to handle client-side hydration
+   * Prevents hydration mismatch by ensuring component renders only on client
+   */
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  /**
+   * Fetches weather data using the browser's geolocation API
+   * Handles various error cases:
+   * - Browser geolocation not supported
+   * - User denies location access
+   * - API fetch failures
+   */
   const getLocationWeather = () => {
     setLoading(true);
     setError(null);
@@ -53,6 +97,14 @@ export default function LocationRequest() {
     );
   };
 
+  /**
+   * Fetches weather data for a specified city
+   * @param {React.FormEvent} e - Form submission event
+   * Handles:
+   * - Empty input validation
+   * - API fetch errors
+   * - Loading states
+   */
   const getCityWeather = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!city.trim()) {
@@ -78,6 +130,7 @@ export default function LocationRequest() {
     }
   };
 
+  // Early return for server-side rendering
   if (!isClient) {
     return (
       <div className="welcome-card">
@@ -86,6 +139,29 @@ export default function LocationRequest() {
     );
   }
 
+  /**
+   * Component Render Structure:
+   * 1. Welcome Card
+   *    - Title section
+   *    - Location-based weather button
+   *    - City search form
+   * 
+   * 2. Status Indicators
+   *    - Loading spinner
+   *    - Error messages
+   * 
+   * 3. Weather Display Card (when data is available)
+   *    - City name
+   *    - Current temperature
+   *    - Weather description
+   *    - Additional weather details grid:
+   *      * Feels like temperature
+   *      * Humidity
+   *      * Wind speed
+   *      * Pressure
+   * 
+   * @returns {JSX.Element} The rendered component
+   */
   return (
     <>
       <div className="welcome-card">

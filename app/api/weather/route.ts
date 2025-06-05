@@ -1,3 +1,37 @@
+/**
+ * Weather API Route Handler
+ * 
+ * This API endpoint provides weather information using the OpenWeather API.
+ * It supports two methods of querying:
+ * 1. By geographic coordinates (latitude/longitude)
+ * 2. By city name
+ * 
+ * @endpoint GET /api/weather
+ * 
+ * @queryParams
+ * - lat: string (optional) - Latitude coordinate
+ * - lon: string (optional) - Longitude coordinate
+ * - city: string (optional) - City name to search for
+ * - units: string (optional) - Units of measurement ('metric' | 'imperial' | 'standard', defaults to 'metric')
+ * 
+ * @returns {Promise<NextResponse>} JSON response containing:
+ * - On Success: Weather data from OpenWeather API
+ * - On Error: 
+ *   - 400: Missing or invalid parameters
+ *   - 404: City not found
+ *   - 500: Server error or API key missing
+ * 
+ * @example
+ * // Get weather by coordinates
+ * GET /api/weather?lat=51.5074&lon=-0.1278
+ * 
+ * // Get weather by city
+ * GET /api/weather?city=London
+ * 
+ * // Get weather with specific units
+ * GET /api/weather?city=London&units=imperial
+ */
+
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
