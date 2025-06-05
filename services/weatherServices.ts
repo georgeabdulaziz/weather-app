@@ -1,18 +1,34 @@
-import { WeatherResponse, WeatherParams } from './types/weather.types';
+import { WeatherResponse } from './types/weather.types';
+
+interface WeatherParams {
+  lat?: number;
+  lon?: number;
+  city?: string;
+  units?: 'metric' | 'imperial' | 'standard';
+}
 
 export const fetchWeatherData = async ({
-    lat,
-    lon,
-    units = 'metric'
+  lat,
+  lon,
+  city,
+  units = 'metric'
 }: WeatherParams): Promise<WeatherResponse> => {
-    const response = await fetch(
-        `/api/weather?lat=${lat}&lon=${lon}&units=${units}`
-    );
+  let url = '/api/weather?';
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch weather data');
-    }
+  if (city) {
+    url += `city=${encodeURIComponent(city)}&units=${units}`;
+  } else if (lat && lon) {
+    url += `lat=${lat}&lon=${lon}&units=${units}`;
+  } else {
+    throw new Error('Either city or coordinates must be provided');
+  }
 
-    return response.json();
-}
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to fetch weather data');
+  }
+
+  return response.json();
+};

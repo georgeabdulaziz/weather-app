@@ -9,15 +9,17 @@ export default function LocationRequest() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [city, setCity] = useState('');
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const getLocation = () => {
+  const getLocationWeather = () => {
     setLoading(true);
     setError(null);
+    setWeather(null);
 
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser');
@@ -51,6 +53,31 @@ export default function LocationRequest() {
     );
   };
 
+  const getCityWeather = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!city.trim()) {
+      setError('Please enter a city name');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setWeather(null);
+
+    try {
+      const weatherData = await fetchWeatherData({
+        city: city.trim(),
+        units: 'metric'
+      });
+      setWeather(weatherData);
+    } catch (err) {
+      console.log(err);
+      setError('City not found or failed to fetch weather data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isClient) {
     return (
       <div className="welcome-card">
@@ -61,22 +88,48 @@ export default function LocationRequest() {
 
   return (
     <>
-      {!location && !loading && (
-        <div className="welcome-card">
-          <h2 className="welcome-title">
-            Welcome to Weather App
-          </h2>
-          <p className="welcome-text">
-            To get your local weather, we need access to your location.
-          </p>
-          <button
-            onClick={getLocation}
-            className="button"
-          >
-            Get My Location
-          </button>
+      <div className="welcome-card">
+        <h2 className="welcome-title">
+          Welcome to Weather App
+        </h2>
+        <div className="search-options">
+          <div className="location-option">
+            <p className="welcome-text">
+              Get weather using your current location
+            </p>
+            <button
+              onClick={getLocationWeather}
+              className="button"
+              disabled={loading}
+            >
+              Use My Location
+            </button>
+          </div>
+
+          <div className="city-option">
+            <p className="welcome-text">
+              Or enter a city name
+            </p>
+            <form onSubmit={getCityWeather} className="city-form">
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Enter city name"
+                className="city-input"
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                className="button"
+                disabled={loading}
+              >
+                Get Weather
+              </button>
+            </form>
+          </div>
         </div>
-      )}
+      </div>
 
       {loading && (
         <div className="loading">
